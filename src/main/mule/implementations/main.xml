@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce-pub-sub="http://www.mulesoft.org/schema/mule/salesforce-pub-sub" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce-pub-sub http://www.mulesoft.org/schema/mule/salesforce-pub-sub/current/mule-salesforce-pub-sub.xsd">
+	<flow name="subscribe" doc:id="ca3b2498-d77c-4a6b-a273-02aa57ce1e80" >
+		<salesforce-pub-sub:subscribe-channel-listener doc:name="Subscribe channel listener" doc:id="116ef90c-6653-4443-b85b-bcb195d2db8b" config-ref="Salesforce_PubSub_Config" channelName='/event/ESR_Platform_Event__e'>
+			<salesforce-pub-sub:replay-option >
+				<salesforce-pub-sub:earliest />
+			</salesforce-pub-sub:replay-option>
+		</salesforce-pub-sub:subscribe-channel-listener>
+		<salesforce:query-xml-stream doc:name="Query xml stream" doc:id="3192c29a-e1af-4867-99ba-58dbfd917f9c" config-ref="Salesforce_Config_RSPoles" >
+			<salesforce:salesforce-query ><![CDATA[SELECT 
+  ${query.fields}
+FROM 
+   ${query.table}
+where ${query.condition}]]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	SFid : payload.event.ESR_Id__c
+}]]]></salesforce:parameters>
+		</salesforce:query-xml-stream>
+		<ee:transform doc:name="Transform Message" doc:id="8d4db868-2357-4277-a0fb-4feb296b7ff3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  Account: if (payload[0].payload.records.Account__r.Name == null) "null" else payload[0].payload.records.Account__r.Name,
+  CreatedBy: if (payload[0].payload.records.CreatedById == null) "null" else payload[0].payload.records.CreatedById,
+  Currency: if (payload[0].payload.records.CurrencyIsoCode == null) "null" else payload[0].payload.records.CurrencyIsoCode,
+  CustomerSupportRep: if (payload[0].payload.records.Customer_Support_Rep__r.Name == null) "null" else payload[0].payload.records.Customer_Support_Rep__r.Name,
+  DesignLead: if (payload[0].payload.records.Design_Lead__c == null) "null" else payload[0].payload.records.Design_Lead__c,
+  ESRName: if (payload[0].payload.records.Name == null) "null" else payload[0].payload.records.Name,
+  LastModifiedBy: if (payload[0].payload.records.LastModifiedById == null) "null" else payload[0].payload.records.LastModifiedById,
+  OppNumber: if (payload[0].payload.records.Opp__c == null) "null" else payload[0].payload.records.Opp__c,
+  Owner: if (payload[0].payload.records.OwnerId == null) "null" else payload[0].payload.records.OwnerId,
+  Progress: if (payload[0].payload.records.Progress__c == null) "null" else payload[0].payload.records.Progress__c,
+  ProjectEngineer: if (payload[0].payload.records.Project_Engineer__r.Name == null) "null" else payload[0].payload.records.Project_Engineer__r.Name,
+  ProjectStatus: if (payload[0].payload.records.Project_Status__c == null) "null" else payload[0].payload.records.Project_Status__c,
+  ProjectTitle: if (payload[0].payload.records.Project_Title__c == null) "null" else payload[0].payload.records.Project_Title__c,
+  ProjectType: if (payload[0].payload.records.Project_Type__c == null) "null" else payload[0].payload.records.Project_Type__c,
+  SalesRep: if (payload[0].payload.records.Sales_Rep__r.Name == null) "null" else payload[0].payload.records.Sales_Rep__r.Name,
+  SolidWorksProjectID: if (payload[0].payload.records.SolidWorks_Project_ID__c == null) "null" else payload[0].payload.records.SolidWorks_Project_ID__c
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="c747efee-4af9-4e09-834a-a3ce46b4e5fb" message="#[payload]"/>
+		<flow-ref doc:name="Flow Reference" doc:id="dc88ff74-d709-457b-af0b-21fbb09a9867" name="mainSub_request"/>
+	</flow>
+	<sub-flow name="mainSub_request" doc:id="5d939cd6-989a-4ae6-9e4f-c8da4e9ad9d6" >
+		<ee:transform doc:name="Transform Message" doc:id="e125b268-eeb6-4aca-862d-90e5aed83f47" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request" doc:id="0bb08248-8ca1-497a-baea-799965720a1d" config-ref="HTTPS_Request_configuration" path="/api/projects">
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="dfc7e059-6270-4ced-8fee-4d3b51f83e43" message="#[payload]" />
+		<ee:transform doc:name="Transform Message" doc:id="770e5ca6-bf01-4827-9017-6e75463073e4">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+
+
+	
+	
+	
+	</mule>
