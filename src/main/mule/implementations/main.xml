@@ -36,7 +36,7 @@ output application/json
   CreatedBy: if (payload[0].payload.records.CreatedById == null) "null" else payload[0].payload.records.CreatedById,
   Currency: if (payload[0].payload.records.CurrencyIsoCode == null) "null" else payload[0].payload.records.CurrencyIsoCode,
   CustomerSupportRep: if (payload[0].payload.records.Customer_Support_Rep__r.Name == null) "null" else payload[0].payload.records.Customer_Support_Rep__r.Name,
-  DesignLead: if (payload[0].payload.records.Design_Lead__c == null) "null" else payload[0].payload.records.Design_Lead__c,
+  DesignLead: if (payload[0].payload.records.Design_Lead__r.Name == null) "null" else payload[0].payload.records.Design_Lead__r.Name,
   ESRName: if (payload[0].payload.records.Name == null) "null" else payload[0].payload.records.Name,
   LastModifiedBy: if (payload[0].payload.records.LastModifiedById == null) "null" else payload[0].payload.records.LastModifiedById,
   OppNumber: if (payload[0].payload.records.Opp__c == null) "null" else payload[0].payload.records.Opp__c,

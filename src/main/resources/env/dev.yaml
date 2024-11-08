@@ -6,7 +6,7 @@ http:
   path: "/"
   
 query: 
-  fields: "Account__r.Name,CreatedById,CreatedDate,CurrencyIsoCode,Customer_Support_Rep__r.Name,Design_Lead__c,Id,LastModifiedDate,Name,Opp__c,OwnerId,Progress__c,Project_Engineer__r.Name,Project_Status__c,Project_Title__c,Project_Type__c,Sales_Rep__r.Name,SolidWorks_Project_ID__c"
+  fields: "Account__r.Name,CreatedById,CreatedDate,CurrencyIsoCode,Customer_Support_Rep__r.Name,Design_Lead__r.Name,Id,LastModifiedDate,Name,Opp__c,OwnerId,Progress__c,Project_Engineer__r.Name,Project_Status__c,Project_Title__c,Project_Type__c,Sales_Rep__r.Name,SolidWorks_Project_ID__c"
   table: "ESR__c"
   condition: "Id = ':SFid'"
   
