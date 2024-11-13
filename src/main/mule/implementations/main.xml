@@ -7,6 +7,13 @@ http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mu
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/salesforce-pub-sub http://www.mulesoft.org/schema/mule/salesforce-pub-sub/current/mule-salesforce-pub-sub.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="033017fc-e4d6-4c52-b887-9cfb80a1c40b" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="mainFlow" doc:id="8748149b-98a6-4428-94a6-d42afc8537ec" >
+		<http:listener doc:name="Listener" doc:id="9c23c167-0f69-4e6e-a60e-d428a88b85d4" config-ref="HTTP_Listener_config" path="/test"/>
+		<logger level="INFO" doc:name="Logger" doc:id="6f402675-df57-40b5-a97a-e164d114ca40" />
+	</flow>
 	<flow name="subscribe" doc:id="ca3b2498-d77c-4a6b-a273-02aa57ce1e80" >
 		<salesforce-pub-sub:subscribe-channel-listener doc:name="Subscribe channel listener" doc:id="116ef90c-6653-4443-b85b-bcb195d2db8b" config-ref="Salesforce_PubSub_Config" channelName='/event/ESR_Platform_Event__e'>
 			<salesforce-pub-sub:replay-option >
@@ -15,10 +22,10 @@ http://www.mulesoft.org/schema/mule/salesforce-pub-sub http://www.mulesoft.org/s
 		</salesforce-pub-sub:subscribe-channel-listener>
 		<salesforce:query-xml-stream doc:name="Query xml stream" doc:id="3192c29a-e1af-4867-99ba-58dbfd917f9c" config-ref="Salesforce_Config_RSPoles" >
 			<salesforce:salesforce-query ><![CDATA[SELECT 
-  ${query.fields}
+  Account__r.Name,CreatedById,CreatedDate,CurrencyIsoCode,Customer_Support_Rep__r.Name,Design_Lead__r.Name,Id,LastModifiedDate,Name,Opp__c,OwnerId,Progress__c,Project_Engineer__r.Name,Project_Status__c,Project_Title__c,Project_Type__c,Sales_Rep__r.Name,SolidWorks_Project_ID__c
 FROM 
-   ${query.table}
-where ${query.condition}]]></salesforce:salesforce-query>
+   ESR__c
+where Id = ':SFid']]></salesforce:salesforce-query>
 			<salesforce:parameters ><![CDATA[#[%dw 2.0
 output application/json
 ---
@@ -51,7 +58,7 @@ output application/json
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<flow-ref doc:name="Flow Reference" doc:id="dc88ff74-d709-457b-af0b-21fbb09a9867" name="mainSub_request"/>
+		<!-- [STUDIO:"mainSub_request"]<flow-ref doc:name="mainSub_request" doc:id="dc88ff74-d709-457b-af0b-21fbb09a9867" name="mainSub_request"/> [STUDIO] -->
 	</flow>
 	<sub-flow name="mainSub_request" doc:id="5d939cd6-989a-4ae6-9e4f-c8da4e9ad9d6" >
 		<logger level="INFO" doc:name="Logger" doc:id="c747efee-4af9-4e09-834a-a3ce46b4e5fb" message="#[payload]" />
