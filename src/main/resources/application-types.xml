@@ -186,4 +186,5 @@ type auto_b4a8722e_4260_490a_8d43_dd2e2d969047_Output_Variables_event = Null
       </types:output-event>
     </types:processor-declaration>
   </types:enrichment>
+  <types:enrichment select="#60e15878-36ca-4be8-91d1-eec8914ef7af"/>
 </types:mule>

@@ -13,7 +13,7 @@ http://www.mulesoft.org/schema/mule/salesforce-pub-sub http://www.mulesoft.org/s
 	<flow name="subscribeAccount" doc:id="8ed47316-1455-4928-ba83-04bc68b040b3" >
 		<salesforce-pub-sub:subscribe-channel-listener doc:name="Subscribe channel listener Accounts" doc:id="fa12c285-10d9-4928-93f7-21a729a6bba7" config-ref="Salesforce_PubSub_Config" channelName="/event/Account_Platform_Event__e">
 			<salesforce-pub-sub:replay-option >
-				<salesforce-pub-sub:latest />
+				<salesforce-pub-sub:replay-id-from-object-store osName="salesforceplatformevents" osKey="accountevent"/>
 			</salesforce-pub-sub:replay-option>
 		</salesforce-pub-sub:subscribe-channel-listener>
 		<logger level="INFO" doc:name="Logger" doc:id="61ad6f32-e7ea-436c-a2f9-db30faee69f9" message="#[payload]"/>
@@ -57,10 +57,10 @@ output application/java
 payload]]></ee:set-payload>
 			</ee:message>
 			<ee:variables >
-				<ee:set-variable variableName="id" ><![CDATA[%dw 2.0
+				<ee:set-variable variableName="companyId" ><![CDATA[%dw 2.0
 output application/java
 ---
-payload.payload.Id]]></ee:set-variable>
+payload.payload.records.Id]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="80db9d33-273c-4cda-8f3c-227677688b16" message="#[payload]"/>
@@ -112,11 +112,11 @@ output application/json
 		</choice>
 	</flow>
 	<flow name="subscribeProyects" doc:id="ca3b2498-d77c-4a6b-a273-02aa57ce1e80" >
-		<salesforce-pub-sub:subscribe-channel-listener doc:name="Subscribe channel listener Projects" doc:id="116ef90c-6653-4443-b85b-bcb195d2db8b" config-ref="Salesforce_PubSub_Config" channelName='/event/ESR_Platform_Event__e'>
+		<!-- [STUDIO:"Subscribe channel listener Projects"]<salesforce-pub-sub:subscribe-channel-listener doc:name="Subscribe channel listener Projects" doc:id="116ef90c-6653-4443-b85b-bcb195d2db8b" config-ref="Salesforce_PubSub_Config" channelName='/event/ESR_Platform_Event__e'>
 			<salesforce-pub-sub:replay-option >
-				<salesforce-pub-sub:latest />
+				<salesforce-pub-sub:replay-id-from-object-store osName="salesforceplatformevents" osKey="esrevent"/>
 			</salesforce-pub-sub:replay-option>
-		</salesforce-pub-sub:subscribe-channel-listener>
+		</salesforce-pub-sub:subscribe-channel-listener> [STUDIO] -->
 		<salesforce:query-xml-stream doc:name="Query xml stream" doc:id="3192c29a-e1af-4867-99ba-58dbfd917f9c" config-ref="Salesforce_Config_RSPoles" >
 			<salesforce:salesforce-query ><![CDATA[SELECT 
   Account__r.Name,CreatedById,CreatedDate,CurrencyIsoCode,Customer_Support_Rep__r.Name,Design_Lead__r.Name,Id,LastModifiedDate,Name,Opp__c,OwnerId,Progress__c,Project_Engineer__r.Name,Project_Status__c,Project_Title__c,Project_Type__c,Sales_Rep__r.Name,SolidWorks_Project_ID__c
@@ -173,7 +173,7 @@ payload]]></ee:set-payload>
 	</sub-flow>
 		<sub-flow name="requestCompany" doc:id="a604829d-d302-401e-a8d5-2e7e26412e12" >
 		<logger level="INFO" doc:name="Logger" doc:id="ef8160f7-9fa1-4b65-9f33-addf2e7c60fa" message="#[payload]" />
-		<http:request method="POST" doc:name="Request /api/company" doc:id="bdfc3454-0949-4d04-b57d-7b1dd631ceee" config-ref="HTTPS_Request_configuration" path="/api/company">
+		<http:request method="POST" doc:name="Request /api/companies" doc:id="bdfc3454-0949-4d04-b57d-7b1dd631ceee" config-ref="HTTPS_Request_configuration" path="/api/companies">
 		</http:request>
 		<logger level="INFO" doc:name="Logger" doc:id="2af45f4e-fcce-4abf-bf2e-0ed51da2777b" message="#[payload]" />
 		<ee:transform doc:name="Transform Message" doc:id="49e97732-e4fa-490b-a9eb-880bf1067578">
@@ -185,15 +185,37 @@ payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</sub-flow>
-		<sub-flow name="requestCompanyId" doc:id="b4a8722e-4260-490a-8d43-dd2e2d969047" >
+		<!-- [STUDIO:"mainFlow"]<flow name="mainFlow" doc:id="f69a08cd-24ce-4ebb-b5cd-4161163940d2" >
+		<http:listener doc:name="Listener" doc:id="4fdd680f-d4a2-467f-8a00-919b7655721d" config-ref="HTTP_Listener_config" path="/test"/>
+		<ee:transform doc:name="Transform Message" doc:id="72203ac3-aacc-4a03-b8f1-007e973bbe51" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+{
+  "Name": "Marquette City of",
+  "Segment": "Muni",
+  "AccountType": "Utility",
+  "UtilityType": null,
+  "SaleforceAccountId": "0015f00000PTP2QAAX",
+  "CompanyId": "C0947"
+}&#93;&#93;></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="0015f00000PTP2VAAX" doc:name="Set Variable" doc:id="8f27de7b-5c82-4360-afb6-6144ed083c00" variableName="companyId"/>
+		<flow-ref doc:name="Flow Reference" doc:id="25b2f125-4818-49b6-9b98-74ff2035252f" name="requestCompanyId"/>
+	</flow> [STUDIO] -->
+	<sub-flow name="requestCompanyId" doc:id="b4a8722e-4260-490a-8d43-dd2e2d969047" >
+		<logger level="INFO" doc:name="Logger" doc:id="76adf97c-f3df-4fd1-9e98-72b81a761438" message="xxxxxxxxxxxxxxxxxxxxxxxxxxxx"/>
 		<logger level="INFO" doc:name="Logger" doc:id="f387e288-9576-46a5-83d5-c93ba24cf8c8" message="#[payload]" />
-		<http:request method="PUT" doc:name="Request /api/company/id" doc:id="6712fa2a-ab40-48cc-8e18-199f65627ee1" config-ref="HTTPS_Request_configuration" path="/api/company">
-			<http:query-params ><![CDATA[#[output application/java
+<logger level="INFO" doc:name="Logger" doc:id="752bbb76-6ba1-4c9e-aa43-4e652c30257a" message="#[vars.companyId]"/>
+		<http:request method="PUT" doc:name="Request /api/company/companyId" doc:id="32700276-4f13-4de3-8181-7875ed3d9118" config-ref="HTTPS_Request_configuration" path="/api/companies/{companyId}">
+			<http:uri-params ><![CDATA[#[output application/java
 ---
 {
-	"companyId" : vars.id
-}]]]></http:query-params>
-		</http:request>
+	"companyId" : vars.companyId
+}]]]></http:uri-params>
+</http:request>
 		<logger level="INFO" doc:name="Logger" doc:id="5792b352-5822-49ef-99b3-3ccc30419dea" message="#[payload]" />
 		<ee:transform doc:name="Transform Message" doc:id="415f7ed8-5dd5-4e4c-a560-541254e9c8b6">
 			<ee:message>

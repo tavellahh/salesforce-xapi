@@ -21,7 +21,7 @@ http://www.mulesoft.org/schema/mule/salesforce-pub-sub http://www.mulesoft.org/s
 		<salesforce-pub-sub:jwt-connection consumerKey="${secure::consumer-key}" keyStore="keystores/${env}/00DAu000006RV13.jks" storePassword="${secure::store-password}" certificateAlias="mulesoft_api_cert" principal="${secure::principal}" tokenEndpoint="https://rstechnologies--fullcopy.sandbox.my.salesforce.com/services/oauth2/token" audienceUrl="https://test.salesforce.com"/>
 	</salesforce-pub-sub:pubsub-config>
 	<http:request-config name="HTTPS_Request_configuration" doc:name="HTTP Request configuration" doc:id="79b68efa-aac8-41d4-8c99-cbd731eb180b" >
-		<http:request-connection protocol="HTTPS" host="solidworks-sapi-auqtkh.ryxgxz.usa-e2.cloudhub.io" />
+		<http:request-connection protocol="HTTPS" host="solidworks-sapi-auqtkh.internal-ryxgxz.usa-e2.cloudhub.io" />
 	</http:request-config>
 	
 </mule>
