@@ -112,11 +112,11 @@ output application/json
 		</choice>
 	</flow>
 	<flow name="subscribeProyects" doc:id="ca3b2498-d77c-4a6b-a273-02aa57ce1e80" >
-		<!-- [STUDIO:"Subscribe channel listener Projects"]<salesforce-pub-sub:subscribe-channel-listener doc:name="Subscribe channel listener Projects" doc:id="116ef90c-6653-4443-b85b-bcb195d2db8b" config-ref="Salesforce_PubSub_Config" channelName='/event/ESR_Platform_Event__e'>
+		<salesforce-pub-sub:subscribe-channel-listener doc:name="Subscribe channel listener Projects" doc:id="116ef90c-6653-4443-b85b-bcb195d2db8b" config-ref="Salesforce_PubSub_Config" channelName='/event/ESR_Platform_Event__e'>
 			<salesforce-pub-sub:replay-option >
 				<salesforce-pub-sub:latest />
 			</salesforce-pub-sub:replay-option>
-		</salesforce-pub-sub:subscribe-channel-listener> [STUDIO] -->
+		</salesforce-pub-sub:subscribe-channel-listener>
 		<salesforce:query-xml-stream doc:name="Query xml stream" doc:id="3192c29a-e1af-4867-99ba-58dbfd917f9c" config-ref="Salesforce_Config_RSPoles" >
 			<salesforce:salesforce-query ><![CDATA[SELECT 
   Account__r.Name,CreatedById,CreatedDate,CurrencyIsoCode,Customer_Support_Rep__r.Name,Design_Lead__r.Name,Id,LastModifiedDate,Name,Opp__c,OwnerId,Progress__c,Project_Engineer__r.Name,Project_Status__c,Project_Title__c,Project_Type__c,Sales_Rep__r.Name,SolidWorks_Project_ID__c
@@ -187,7 +187,7 @@ payload]]></ee:set-payload>
 	</sub-flow>
 		<sub-flow name="requestCompanyId" doc:id="b4a8722e-4260-490a-8d43-dd2e2d969047" >
 		<logger level="INFO" doc:name="Logger" doc:id="f387e288-9576-46a5-83d5-c93ba24cf8c8" message="#[payload]" />
-		<http:request method="POST" doc:name="Request /api/company/id" doc:id="6712fa2a-ab40-48cc-8e18-199f65627ee1" config-ref="HTTPS_Request_configuration" path="/api/company">
+		<http:request method="PUT" doc:name="Request /api/company/id" doc:id="6712fa2a-ab40-48cc-8e18-199f65627ee1" config-ref="HTTPS_Request_configuration" path="/api/company">
 			<http:query-params ><![CDATA[#[output application/java
 ---
 {

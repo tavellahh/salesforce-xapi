@@ -1,1 +1,6 @@
 /target/
+.settings/org.mulesoft.exportwizardsettings.prefs
+.mule/7.18.1/cache/file/metadata-storage_8127a3b80d79befe0827654a5268d79bfd7b211d/offheap-disk-store/ehcache-disk-store.data
+.mule/7.18.1/cache/.lock
+.mule/7.18.1/cache/file/metadata-storage_8127a3b80d79befe0827654a5268d79bfd7b211d/offheap-disk-store/ehcache-disk-store.data
+/.settings
