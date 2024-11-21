@@ -9,19 +9,18 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
 http://www.mulesoft.org/schema/mule/salesforce-pub-sub http://www.mulesoft.org/schema/mule/salesforce-pub-sub/current/mule-salesforce-pub-sub.xsd">
 	<salesforce:sfdc-config name="Salesforce_Config_RSPoles" doc:name="Salesforce Config" doc:id="277830bd-64b8-42cb-8308-4cd24a41aa28" >
-		<salesforce:jwt-connection consumerKey="${secure::consumer-key}" keyStore="keystores/${env}/00DAu000006RV13.jks" storePassword="${secure::store-password}" certificateAlias="mulesoft_api_cert" principal="${secure::principal}" tokenEndpoint="https://rstechnologies--fullcopy.sandbox.my.salesforce.com/services/oauth2/token" audienceUrl="https://test.salesforce.com" />
+		<salesforce:jwt-connection consumerKey="${secure::consumer-key}" keyStore="keystores/${env}/00DAu000006RV13.jks" storePassword="${secure::store-password}" certificateAlias="${certificateAlias}" principal="${secure::principal}" tokenEndpoint="${tokenEndpoint}" audienceUrl="${audienceUrl}" />
 	</salesforce:sfdc-config>
 	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="c1ba3073-3ce7-435b-8999-e54b174db62d" file="env/${env}-secure.yaml" key="${secret.encrypt.key}" >
 		<secure-properties:encrypt algorithm="Blowfish" />
 	</secure-properties:config>
 	<global-property doc:name="Global Property" doc:id="fa6e53b7-fb2f-41ed-ad39-c3d23921e907" name="env" value="dev" />
-	<global-property doc:name="Global Property" doc:id="3fc5f718-895b-4d32-86eb-89df831101b8" name="secret.encrypt.key" value="61f786d4-72f8-4401-af18-5dd3db078f03" />
 	<configuration-properties doc:name="Configuration properties" doc:id="884365ae-d85d-4764-be82-591865af292e" file="env/${env}.yaml" />
 	<salesforce-pub-sub:pubsub-config name="Salesforce_PubSub_Config" doc:name="Salesforce PubSub Config" doc:id="d68a7569-57ab-4a77-9118-ad9c7a48c1be" >
-		<salesforce-pub-sub:jwt-connection consumerKey="${secure::consumer-key}" keyStore="keystores/${env}/00DAu000006RV13.jks" storePassword="${secure::store-password}" certificateAlias="mulesoft_api_cert" principal="${secure::principal}" tokenEndpoint="https://rstechnologies--fullcopy.sandbox.my.salesforce.com/services/oauth2/token" audienceUrl="https://test.salesforce.com"/>
+		<salesforce-pub-sub:jwt-connection consumerKey="${secure::consumer-key}" keyStore="keystores/${env}/00DAu000006RV13.jks" storePassword="${secure::store-password}" certificateAlias="${certificateAlias}" principal="${secure::principal}" tokenEndpoint="${tokenEndpoint}" audienceUrl="${audienceUrl}" host="${grpcHost}" port="${grpcPort}"/>
 	</salesforce-pub-sub:pubsub-config>
 	<http:request-config name="HTTPS_Request_configuration" doc:name="HTTP Request configuration" doc:id="79b68efa-aac8-41d4-8c99-cbd731eb180b" >
-		<http:request-connection protocol="HTTPS" host="solidworks-sapi-auqtkh.internal-ryxgxz.usa-e2.cloudhub.io" />
+		<http:request-connection protocol="HTTPS" host="${requestHost}" />
 	</http:request-config>
 	
 </mule>

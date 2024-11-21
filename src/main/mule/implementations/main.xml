@@ -185,36 +185,17 @@ payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</sub-flow>
-		<!-- [STUDIO:"mainFlow"]<flow name="mainFlow" doc:id="f69a08cd-24ce-4ebb-b5cd-4161163940d2" >
-		<http:listener doc:name="Listener" doc:id="4fdd680f-d4a2-467f-8a00-919b7655721d" config-ref="HTTP_Listener_config" path="/test"/>
-		<ee:transform doc:name="Transform Message" doc:id="72203ac3-aacc-4a03-b8f1-007e973bbe51" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
-&#45;&#45;-
-{
-  "Name": "Marquette City of",
-  "Segment": "Muni",
-  "AccountType": "Utility",
-  "UtilityType": null,
-  "SaleforceAccountId": "0015f00000PTP2QAAX",
-  "CompanyId": "C0947"
-}&#93;&#93;></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<set-variable value="0015f00000PTP2VAAX" doc:name="Set Variable" doc:id="8f27de7b-5c82-4360-afb6-6144ed083c00" variableName="companyId"/>
-		<flow-ref doc:name="Flow Reference" doc:id="25b2f125-4818-49b6-9b98-74ff2035252f" name="requestCompanyId"/>
-	</flow> [STUDIO] -->
 	<sub-flow name="requestCompanyId" doc:id="b4a8722e-4260-490a-8d43-dd2e2d969047" >
-		<logger level="INFO" doc:name="Logger" doc:id="76adf97c-f3df-4fd1-9e98-72b81a761438" message="xxxxxxxxxxxxxxxxxxxxxxxxxxxx"/>
 		<logger level="INFO" doc:name="Logger" doc:id="f387e288-9576-46a5-83d5-c93ba24cf8c8" message="#[payload]" />
 <logger level="INFO" doc:name="Logger" doc:id="752bbb76-6ba1-4c9e-aa43-4e652c30257a" message="#[vars.companyId]"/>
 		<http:request method="PUT" doc:name="Request /api/company/companyId" doc:id="32700276-4f13-4de3-8181-7875ed3d9118" config-ref="HTTPS_Request_configuration" path="/api/companies/{companyId}">
-			<http:uri-params ><![CDATA[#[output application/java
+			<http:uri-params><![CDATA[#[output application/java
 ---
 {
 	"companyId" : vars.companyId
 }]]]></http:uri-params>
+			
+			
 </http:request>
 		<logger level="INFO" doc:name="Logger" doc:id="5792b352-5822-49ef-99b3-3ccc30419dea" message="#[payload]" />
 		<ee:transform doc:name="Transform Message" doc:id="415f7ed8-5dd5-4e4c-a560-541254e9c8b6">
