@@ -15,12 +15,12 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 	<flow name="subscribeAccount" doc:id="8ed47316-1455-4928-ba83-04bc68b040b3" >
 		<salesforce-pub-sub:subscribe-channel-listener doc:name="Subscribe channel listener Accounts" doc:id="fa12c285-10d9-4928-93f7-21a729a6bba7" config-ref="Salesforce_PubSub_Config" channelName="/event/Account_Platform_Event__e" eventBatchSize="10">
 			<salesforce-pub-sub:replay-option >
-				<salesforce-pub-sub:latest />
+				<salesforce-pub-sub:replay-id-from-object-store osName="salesforceplatformevents" osKey="accountevent"/>
 			</salesforce-pub-sub:replay-option>
 		</salesforce-pub-sub:subscribe-channel-listener>
 		<logger level="INFO" doc:name="Logger" doc:id="61ad6f32-e7ea-436c-a2f9-db30faee69f9" message="#[payload]" />
 		<os:store doc:name="Store" doc:id="f130714d-100c-4190-9e0f-cd8284bb5fbb" key="accountevent" objectStore="salesforceplatformevents">
-			<os:value ><![CDATA[#[payload.ReplayId]]]></os:value>
+			<os:value ><![CDATA[#[3427176]]]></os:value>
 		</os:store>
 		<ee:transform doc:name="event" doc:id="12b9679d-07fe-4fb7-8ab1-08cc7e85f0d3" >
 			<ee:message >
