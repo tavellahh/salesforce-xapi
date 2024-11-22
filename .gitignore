@@ -6,3 +6,5 @@
 /.settings
 /.mule
 /.settings
+.settings/org.mulesoft.exportwizardsettings.prefs
+/.settings
