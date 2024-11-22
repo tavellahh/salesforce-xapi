@@ -20,7 +20,7 @@ http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/cu
 		</salesforce-pub-sub:subscribe-channel-listener>
 		<logger level="INFO" doc:name="Logger" doc:id="61ad6f32-e7ea-436c-a2f9-db30faee69f9" message="#[payload]" />
 		<os:store doc:name="Store" doc:id="f130714d-100c-4190-9e0f-cd8284bb5fbb" key="accountevent" objectStore="salesforceplatformevents">
-			<os:value ><![CDATA[#[3427176]]]></os:value>
+			<os:value ><![CDATA[#[payload.ReplayId]]]></os:value>
 		</os:store>
 		<ee:transform doc:name="event" doc:id="12b9679d-07fe-4fb7-8ab1-08cc7e85f0d3" >
 			<ee:message >
