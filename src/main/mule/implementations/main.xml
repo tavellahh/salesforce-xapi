@@ -201,15 +201,8 @@ payload]]></ee:set-payload>
 			
 </http:request>
 			<error-handler >
-				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7a021924-8e8b-4e3d-b3b4-d9f4cd89f70c" type="ANY">
-					  <choice doc:name="Choice">
-        <when expression='#[error.errorMessage.attributes.statusCode == 501]'>
-            <set-payload value="Error 501: Not Implemented. Please check if the server supports this operation." doc:name="Set Custom Message"/>
-        </when>
-        <otherwise>
-            <set-payload value="#[error.exception.localizedMessage]" doc:name="Set Generic Error"/>
-        </otherwise>
-    </choice>
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7a021924-8e8b-4e3d-b3b4-d9f4cd89f70c" type="HTTP:NOT_FOUND">
+					  <set-payload value="The company was not found and therefore could not be updated." doc:name="Set Custom Message" />
 				</on-error-continue>
 			</error-handler>
 		</try>
