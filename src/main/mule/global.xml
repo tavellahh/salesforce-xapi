@@ -22,6 +22,5 @@ http://www.mulesoft.org/schema/mule/salesforce-pub-sub http://www.mulesoft.org/s
 	<http:request-config name="HTTPS_Request_configuration" doc:name="HTTP Request configuration" doc:id="79b68efa-aac8-41d4-8c99-cbd731eb180b" >
 		<http:request-connection protocol="HTTPS" host="${requestHost}" />
 	</http:request-config>
-	<global-property doc:name="Global Property" doc:id="579ead8c-e7b8-4643-8697-33af66a7236e" name="secret.encrypt.key" value="61f786d4-72f8-4401-af18-5dd3db078f03" />
 	
 </mule>
