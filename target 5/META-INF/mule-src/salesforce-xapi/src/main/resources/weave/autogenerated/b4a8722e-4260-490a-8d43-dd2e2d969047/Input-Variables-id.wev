@@ -1,4 +1,0 @@
-%dw 2.0
-
-type auto_b4a8722e_4260_490a_8d43_dd2e2d969047_Input_Variables_id = String {"typeId": "Id"} | Null
-

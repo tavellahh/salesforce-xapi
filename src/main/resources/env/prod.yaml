@@ -1,0 +1,7 @@
+grpcHost: "api.pubsub.salesforce.com"
+grpcPort: "7443"
+certificateAlias: "mulesoft_api_cert"
+tokenEndpoint: "https://rstechnologies.my.salesforce.com/services/oauth2/token"
+audienceUrl: "https://login.salesforce.com"
+requestHost: "solidworks-sapi-auqtkh.ryxgxz.usa-e2.cloudhub.io"
+keystoreName: "RSProdKeystore.jks"

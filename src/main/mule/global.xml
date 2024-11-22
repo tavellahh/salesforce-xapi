@@ -9,7 +9,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
 http://www.mulesoft.org/schema/mule/salesforce-pub-sub http://www.mulesoft.org/schema/mule/salesforce-pub-sub/current/mule-salesforce-pub-sub.xsd">
 	<salesforce:sfdc-config name="Salesforce_Config_RSPoles" doc:name="Salesforce Config" doc:id="277830bd-64b8-42cb-8308-4cd24a41aa28" >
-		<salesforce:jwt-connection consumerKey="${secure::consumer-key}" keyStore="keystores/${env}/00DAu000006RV13.jks" storePassword="${secure::store-password}" certificateAlias="${certificateAlias}" principal="${secure::principal}" tokenEndpoint="${tokenEndpoint}" audienceUrl="${audienceUrl}" />
+		<salesforce:jwt-connection consumerKey="${secure::consumer-key}" keyStore="keystores/${env}/${keystoreName}" storePassword="${secure::store-password}" certificateAlias="${certificateAlias}" principal="${secure::principal}" tokenEndpoint="${tokenEndpoint}" audienceUrl="${audienceUrl}" />
 	</salesforce:sfdc-config>
 	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="c1ba3073-3ce7-435b-8999-e54b174db62d" file="env/${env}-secure.yaml" key="${secret.encrypt.key}" >
 		<secure-properties:encrypt algorithm="Blowfish" />
@@ -22,5 +22,6 @@ http://www.mulesoft.org/schema/mule/salesforce-pub-sub http://www.mulesoft.org/s
 	<http:request-config name="HTTPS_Request_configuration" doc:name="HTTP Request configuration" doc:id="79b68efa-aac8-41d4-8c99-cbd731eb180b" >
 		<http:request-connection protocol="HTTPS" host="${requestHost}" />
 	</http:request-config>
+	<global-property doc:name="Global Property" doc:id="579ead8c-e7b8-4643-8697-33af66a7236e" name="secret.encrypt.key" value="61f786d4-72f8-4401-af18-5dd3db078f03" />
 	
 </mule>

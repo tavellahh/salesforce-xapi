@@ -1,0 +1,6 @@
+grpcHost: "api.pubsub.salesforce.com"
+grpcPort: "7443"
+certificateAlias: "mulesoft_api_cert"
+tokenEndpoint: "https://rstechnologies--fullcopy.sandbox.my.salesforce.com/services/oauth2/token"
+audienceUrl: "https://test.salesforce.com"
+requestHost: "solidworks-sapi-auqtkh.ryxgxz.usa-e2.cloudhub.io"

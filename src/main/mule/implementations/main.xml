@@ -1,22 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:salesforce-pub-sub="http://www.mulesoft.org/schema/mule/salesforce-pub-sub" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:salesforce-pub-sub="http://www.mulesoft.org/schema/mule/salesforce-pub-sub"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
-http://www.mulesoft.org/schema/mule/salesforce-pub-sub http://www.mulesoft.org/schema/mule/salesforce-pub-sub/current/mule-salesforce-pub-sub.xsd">
+http://www.mulesoft.org/schema/mule/salesforce-pub-sub http://www.mulesoft.org/schema/mule/salesforce-pub-sub/current/mule-salesforce-pub-sub.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="033017fc-e4d6-4c52-b887-9cfb80a1c40b" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
+	<os:object-store name="salesforceplatformevents" doc:name="Object store" doc:id="8a75c6f7-6bfd-4f71-a318-43fd064ac262" />
 	<flow name="subscribeAccount" doc:id="8ed47316-1455-4928-ba83-04bc68b040b3" >
 		<salesforce-pub-sub:subscribe-channel-listener doc:name="Subscribe channel listener Accounts" doc:id="fa12c285-10d9-4928-93f7-21a729a6bba7" config-ref="Salesforce_PubSub_Config" channelName="/event/Account_Platform_Event__e">
 			<salesforce-pub-sub:replay-option >
 				<salesforce-pub-sub:replay-id-from-object-store osName="salesforceplatformevents" osKey="accountevent"/>
 			</salesforce-pub-sub:replay-option>
 		</salesforce-pub-sub:subscribe-channel-listener>
-		<logger level="INFO" doc:name="Logger" doc:id="61ad6f32-e7ea-436c-a2f9-db30faee69f9" message="#[payload]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="61ad6f32-e7ea-436c-a2f9-db30faee69f9" message="#[payload]" />
+		<os:store doc:name="Store" doc:id="f130714d-100c-4190-9e0f-cd8284bb5fbb" key="accountevent" objectStore="salesforceplatformevents">
+			<os:value ><![CDATA[#[payload.ReplayId]]]></os:value>
+		</os:store>
 		<ee:transform doc:name="event" doc:id="12b9679d-07fe-4fb7-8ab1-08cc7e85f0d3" >
 			<ee:message >
 			</ee:message>
@@ -39,7 +44,6 @@ output application/json
 	SFid : payload.Event.Account_Id__c
 }]]]></salesforce:parameters>
 		</salesforce:query-xml-stream>
-		<logger level="INFO" doc:name="Logger" doc:id="faabd029-14d4-414c-99ab-844fcfa546fb" message="#[payload]"/>
 		<ee:transform doc:name="payload to json" doc:id="1863ae0f-08b1-40a4-8c3c-33fae7f3a45f" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -84,7 +88,6 @@ output application/json
 					</ee:message>
 				</ee:transform>
 				<flow-ref doc:name="requestCompany" doc:id="4c7a5fc4-87be-479c-9bea-4381466a88e0" name="requestCompany"/>
-				<logger level="INFO" doc:name="Logger" doc:id="595eb537-04ee-4900-aef3-694e1a2e4076" message="#[payload]"/>
 			</when>
 			<when expression='#[vars.event == "Edit"]'>
 				<logger level="INFO" doc:name="Logger" doc:id="dda9af81-36a0-4cd5-a1a2-363c3235572e" message="Edit"/>
@@ -104,59 +107,58 @@ output application/json
 					</ee:message>
 				</ee:transform>
 				<flow-ref doc:name="requestCompanyId" doc:id="57da6f51-c38d-4f51-8af8-b0b8e272875f" name="requestCompanyId"/>
-				<logger level="INFO" doc:name="Logger" doc:id="10fcfbcf-075e-4372-8ec8-e4c3577a4a6d" message="#[payload]"/>
 			</when>
 			<otherwise >
 				<logger level="INFO" doc:name="Logger" doc:id="b98918b0-d72f-4ac7-9db7-f17e74c81dfd" message="#[payload]"/>
 			</otherwise>
 		</choice>
 	</flow>
-	<flow name="subscribeProyects" doc:id="ca3b2498-d77c-4a6b-a273-02aa57ce1e80" >
-		<!-- [STUDIO:"Subscribe channel listener Projects"]<salesforce-pub-sub:subscribe-channel-listener doc:name="Subscribe channel listener Projects" doc:id="116ef90c-6653-4443-b85b-bcb195d2db8b" config-ref="Salesforce_PubSub_Config" channelName='/event/ESR_Platform_Event__e'>
+	<!-- [STUDIO:"subscribeProyects"]<flow name="subscribeProyects" doc:id="ca3b2498-d77c-4a6b-a273-02aa57ce1e80" >
+		<salesforce-pub-sub:subscribe-channel-listener doc:name="Subscribe channel listener Projects" doc:id="116ef90c-6653-4443-b85b-bcb195d2db8b" config-ref="Salesforce_PubSub_Config" channelName='/event/ESR_Platform_Event__e'>
 			<salesforce-pub-sub:replay-option >
 				<salesforce-pub-sub:replay-id-from-object-store osName="salesforceplatformevents" osKey="esrevent"/>
 			</salesforce-pub-sub:replay-option>
-		</salesforce-pub-sub:subscribe-channel-listener> [STUDIO] -->
+		</salesforce-pub-sub:subscribe-channel-listener>
 		<salesforce:query-xml-stream doc:name="Query xml stream" doc:id="3192c29a-e1af-4867-99ba-58dbfd917f9c" config-ref="Salesforce_Config_RSPoles" >
 			<salesforce:salesforce-query ><![CDATA[SELECT 
   Account__r.Name,CreatedById,CreatedDate,CurrencyIsoCode,Customer_Support_Rep__r.Name,Design_Lead__r.Name,Id,LastModifiedDate,Name,Opp__c,OwnerId,Progress__c,Project_Engineer__r.Name,Project_Status__c,Project_Title__c,Project_Type__c,Sales_Rep__r.Name,SolidWorks_Project_ID__c
 FROM 
    ESR__c
-where Id = ':SFid']]></salesforce:salesforce-query>
+where Id = ':SFid'&#93;&#93;></salesforce:salesforce-query>
 			<salesforce:parameters ><![CDATA[#[%dw 2.0
 output application/json
----
+&#45;&#45;-
 {
 	SFid : payload.event.ESR_Id__c
-}]]]></salesforce:parameters>
+}&#93;&#93;&#93;></salesforce:parameters>
 		</salesforce:query-xml-stream>
 		<ee:transform doc:name="Transform Message" doc:id="8d4db868-2357-4277-a0fb-4feb296b7ff3" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
----
+&#45;&#45;-
 {
-  Account: payload[0].payload.records.Account__r.Name,
-  //CreatedBy: payload[0].payload.records.CreatedById,
-  Currency: payload[0].payload.records.CurrencyIsoCode,
-  CustomerSupportRep: payload[0].payload.records.Customer_Support_Rep__r.Name,
-  DesignLead: payload[0].payload.records.Design_Lead__r.Name,
-  ESRName: payload[0].payload.records.Name,
-  //LastModifiedBy: payload[0].payload.records.LastModifiedById,
-  //OppNumber: payload[0].payload.records.Opp__c,
-  //Owner: payload[0].payload.records.OwnerId,
-  //Progress: payload[0].payload.records.Progress__c,
-  ProjectEngineer: payload[0].payload.records.Project_Engineer__r.Name,
-  ProjectStatus: "",//payload[0].payload.records.Project_Status__c,
-  //ProjectTitle: payload[0].payload.records.Project_Title__c,
-  ProjectType: payload[0].payload.records.Project_Type__c,
-  SalesRep: payload[0].payload.records.Sales_Rep__r.Name
-  //SolidWorksProjectID: payload[0].payload.records.SolidWorks_Project_ID__c
-}]]></ee:set-payload>
+  Account: payload[0&#93;.payload.records.Account__r.Name,
+  //CreatedBy: payload[0&#93;.payload.records.CreatedById,
+  Currency: payload[0&#93;.payload.records.CurrencyIsoCode,
+  CustomerSupportRep: payload[0&#93;.payload.records.Customer_Support_Rep__r.Name,
+  DesignLead: payload[0&#93;.payload.records.Design_Lead__r.Name,
+  ESRName: payload[0&#93;.payload.records.Name,
+  //LastModifiedBy: payload[0&#93;.payload.records.LastModifiedById,
+  //OppNumber: payload[0&#93;.payload.records.Opp__c,
+  //Owner: payload[0&#93;.payload.records.OwnerId,
+  //Progress: payload[0&#93;.payload.records.Progress__c,
+  ProjectEngineer: payload[0&#93;.payload.records.Project_Engineer__r.Name,
+  ProjectStatus: "",//payload[0&#93;.payload.records.Project_Status__c,
+  //ProjectTitle: payload[0&#93;.payload.records.Project_Title__c,
+  ProjectType: payload[0&#93;.payload.records.Project_Type__c,
+  SalesRep: payload[0&#93;.payload.records.Sales_Rep__r.Name
+  //SolidWorksProjectID: payload[0&#93;.payload.records.SolidWorks_Project_ID__c
+}&#93;&#93;></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<flow-ref doc:name="requestProjects" doc:id="dc88ff74-d709-457b-af0b-21fbb09a9867" name="requestProjects"/>
-	</flow>
+	</flow> [STUDIO] -->
 	<sub-flow name="requestProjects" doc:id="5d939cd6-989a-4ae6-9e4f-c8da4e9ad9d6" >
 		<logger level="INFO" doc:name="Logger" doc:id="c747efee-4af9-4e09-834a-a3ce46b4e5fb" message="#[payload]" />
 		<http:request method="POST" doc:name="Request /api/projects" doc:id="0bb08248-8ca1-497a-baea-799965720a1d" config-ref="HTTPS_Request_configuration" path="/api/projects">
@@ -188,7 +190,8 @@ payload]]></ee:set-payload>
 	<sub-flow name="requestCompanyId" doc:id="b4a8722e-4260-490a-8d43-dd2e2d969047" >
 		<logger level="INFO" doc:name="Logger" doc:id="f387e288-9576-46a5-83d5-c93ba24cf8c8" message="#[payload]" />
 <logger level="INFO" doc:name="Logger" doc:id="752bbb76-6ba1-4c9e-aa43-4e652c30257a" message="#[vars.companyId]"/>
-		<http:request method="PUT" doc:name="Request /api/company/companyId" doc:id="32700276-4f13-4de3-8181-7875ed3d9118" config-ref="HTTPS_Request_configuration" path="/api/companies/{companyId}">
+		<try doc:name="Try" doc:id="9d116424-3fd4-495c-9884-61882121d0d2" >
+			<http:request method="PUT" doc:name="Request /api/company/companyId" doc:id="32700276-4f13-4de3-8181-7875ed3d9118" config-ref="HTTPS_Request_configuration" path="/api/companies/{companyId}">
 			<http:uri-params><![CDATA[#[output application/java
 ---
 {
@@ -197,15 +200,20 @@ payload]]></ee:set-payload>
 			
 			
 </http:request>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7a021924-8e8b-4e3d-b3b4-d9f4cd89f70c" type="ANY">
+					  <choice doc:name="Choice">
+        <when expression='#[error.errorMessage.attributes.statusCode == 501]'>
+            <set-payload value="Error 501: Not Implemented. Please check if the server supports this operation." doc:name="Set Custom Message"/>
+        </when>
+        <otherwise>
+            <set-payload value="#[error.exception.localizedMessage]" doc:name="Set Generic Error"/>
+        </otherwise>
+    </choice>
+				</on-error-continue>
+			</error-handler>
+		</try>
 		<logger level="INFO" doc:name="Logger" doc:id="5792b352-5822-49ef-99b3-3ccc30419dea" message="#[payload]" />
-		<ee:transform doc:name="Transform Message" doc:id="415f7ed8-5dd5-4e4c-a560-541254e9c8b6">
-			<ee:message>
-				<ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-payload]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
 	</sub-flow>
 
 	
